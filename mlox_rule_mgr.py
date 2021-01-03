@@ -42,7 +42,7 @@ class MloxRuleManager(object):
         
         with open(basefile_name, "w", encoding="utf-8") as out_f:
             for rulefile_name in sorted_rulefile_names:
-                logger.info(f"reading rulefile '{glob_filename}'")
+                logger.info(f"reading rulefile '{rulefile_name}'")
                 with open(rulefile_name, "r", encoding="utf-8") as in_f:
                     lines = in_f.readlines()
                     text = "".join(lines)
@@ -105,7 +105,7 @@ class MloxRuleManager(object):
                 section.extend(comments)
             sections[sectionname] = section
                 
-            logger.debug(f"directory: {directory}")
+            logger.debug(f"output directory: {directory}")
             for name, section in sections.items():
                 logger.info(f"saving section '{name}'")
                 sectionfile_name = os.path.join(directory, f"{name}.txt")
