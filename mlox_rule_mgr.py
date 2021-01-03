@@ -21,6 +21,20 @@ if not logger.hasHandlers():
 
 
 def get_safe_filename(name):
+    """
+    Converts a name to a safe filename.
+
+    Parameters
+    ----------
+    name : string
+        name to convert to safe filename.
+
+    Returns
+    -------
+    filename : string
+        safe filename.
+
+    """
     safechars = string.ascii_lowercase + string.ascii_uppercase + string.digits + '.-'
     filename = ''.join([c for c in name if c in safechars])
     return filename
@@ -28,9 +42,30 @@ def get_safe_filename(name):
 
 class MloxRuleManager(object):
     def __init__(self, args):
+        """
+        MLOX rule-management commands
+
+        Parameters
+        ----------
+        args : ArgumentParser.Namespace
+            rule-management command-line arguments.
+
+        """
         self.args = args
 
     def merge(self):
+        """
+        usage: merge [-h] basefile rulefiles [rulefiles ...]
+        
+        positional arguments:
+          basefile    target file to merge subsequent mlox rule files into
+          rulefiles   rule files to merge
+
+        Returns
+        -------
+        None.
+
+        """
         basefile_name = self.args.basefile
         rulefile_names = self.args.rulefiles
         logger.debug(f"basefile: {basefile_name}, rulefiles: {rulefile_names}")
@@ -50,6 +85,22 @@ class MloxRuleManager(object):
                     out_f.write(os.linesep)
     
     def split(self):
+        """
+        usage: split [-h] [-d DIRECTORY] rulefile
+
+        positional arguments:
+          rulefile              rule file to split
+        
+        optional arguments:
+          -h, --help            show this help message and exit
+          -d DIRECTORY, --directory DIRECTORY
+                                output directory
+
+        Returns
+        -------
+        None.
+
+        """
         rulefile_name = os.path.realpath(self.args.rulefile)
         directory = self.args.directory
         if directory is None:
@@ -81,7 +132,8 @@ class MloxRuleManager(object):
                     #logger.debug(sectionname_match.groups())
                     # Save existing section.
                     sections[sectionname] = section
-                    # TODO: Instead of collecting sections into dictionary, save to disk at this point.
+                    # TODO: Instead of collecting sections into dictionary,
+                    # save to disk at this point.
                     # Create new section.
                     sectionname = get_safe_filename(sectionname_match.group(1))
                     # Add existing comment lines to start of section.
@@ -115,6 +167,14 @@ class MloxRuleManager(object):
 
     
     def run(self):
+        """
+        Runs commands specified in args to MloxRuleManager(args).
+
+        Returns
+        -------
+        None.
+
+        """
         logger.debug(f"args: {self.args}")
         command = self.args.command
         if hasattr(self, command):
@@ -124,6 +184,15 @@ class MloxRuleManager(object):
 
 
 def parse_args():
+    """
+    Setup command-line argument parsing.
+
+    Returns
+    -------
+    args :  ArgumentParser.Namespace
+            rule-management command-line arguments.
+
+    """
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest = "command")
     
@@ -140,6 +209,14 @@ def parse_args():
 
 
 def main():
+    """
+    Run MloxRuleManager(args) with parsed command-line args.
+
+    Returns
+    -------
+    None.
+
+    """
     args = parse_args()
     mlox_rule_mgr = MloxRuleManager(args)
     mlox_rule_mgr.run()
