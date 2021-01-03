@@ -5,7 +5,7 @@ Created on Sat Jan  2 17:45:55 2021
 @author: Morrowind
 """
 
-import argparse, logging, sys
+import argparse, glob, logging, os, re, string, sys
 
 # Create logger named after this module
 logger = logging.getLogger(__name__)
@@ -20,18 +20,99 @@ if not logger.hasHandlers():
     logger.addHandler(ch)
 
 
+def get_safe_filename(name):
+    safechars = string.ascii_lowercase + string.ascii_uppercase + string.digits + '.-'
+    filename = ''.join([c for c in name if c in safechars])
+    return filename
+
+
 class MloxRuleManager(object):
     def __init__(self, args):
         self.args = args
-        
+
     def merge(self):
-        basefile = self.args.basefile
-        rulefiles = self.args.rulefiles
-        logger.debug(f"basefile: {basefile}, rulefiles: {rulefiles}")
+        basefile_name = self.args.basefile
+        rulefile_names = self.args.rulefiles
+        logger.debug(f"basefile: {basefile_name}, rulefiles: {rulefile_names}")
+
+        sorted_rulefile_names = list()
+        for rulefile_name in rulefile_names:
+            sorted_rulefile_names.extend(glob.glob(rulefile_name))
+        sorted_rulefile_names.sort()
+        
+        with open(basefile_name, "w", encoding="utf-8") as out_f:
+            for rulefile_name in sorted_rulefile_names:
+                logger.info(f"reading rulefile '{glob_filename}'")
+                with open(rulefile_name, "r", encoding="utf-8") as in_f:
+                    lines = in_f.readlines()
+                    text = "".join(lines)
+                    out_f.write(text.strip())
+                    out_f.write(os.linesep)
     
     def split(self):
-        rulefile = self.args.rulefile
-        logger.debug(f"rulefile: {rulefile}")
+        rulefile_name = os.path.realpath(self.args.rulefile)
+        directory = self.args.directory
+        if directory is None:
+            directory = os.path.dirname(os.path.realpath(rulefile_name))
+        if not os.path.exists(directory):
+            logger.warn(f"specified output directory '{directory}' does not exist")
+            return
+        
+        logger.debug(f"rulefile: {rulefile_name}")
+
+        self.comment_regex = re.compile(r"\s*;+\s*")
+        self.sectionname_regex = re.compile(r"\s*;+\s*@(.*)")
+
+        # Try to read rulefile.
+        with open(rulefile_name, "r", encoding="utf-8") as in_f:
+            # TODO: Instead of collecting sections into dictionary, save to disk.
+            sections = dict()
+
+            # Create first "header" section.
+            sectionname = "_header"
+            section = list()
+            comments = list()
+
+            for line_num, line in enumerate(in_f.readlines()):
+                sectionname_match = self.sectionname_regex.match(line)
+                comment_match = self.comment_regex.match(line)
+                if sectionname_match:
+                    #logger.debug(f"{line_num}: {sectionname_match}")
+                    #logger.debug(sectionname_match.groups())
+                    # Save existing section.
+                    sections[sectionname] = section
+                    # TODO: Instead of collecting sections into dictionary, save to disk at this point.
+                    # Create new section.
+                    sectionname = get_safe_filename(sectionname_match.group(1))
+                    # Add existing comment lines to start of section.
+                    section = comments
+                    comments = list()
+                    # Add section name to start of section.
+                    section.append(line)
+                elif comment_match:
+                    #logger.debug(f"{line_num}: {comment_match}")
+                    # Collect comment line, but don't add to section yet.
+                    comments.append(line)
+                else:
+                    # Add any comment lines to current section.
+                    section.extend(comments)
+                    comments = list()
+                    # Add current line to section.
+                    section.append(line)
+
+            # Save final section.
+            if comments:
+                section.extend(comments)
+            sections[sectionname] = section
+                
+            logger.debug(f"directory: {directory}")
+            for name, section in sections.items():
+                logger.info(f"saving section '{name}'")
+                sectionfile_name = os.path.join(directory, f"{name}.txt")
+                with open(sectionfile_name, "w", encoding="utf-8") as out_f:
+                    out_f.writelines(section)
+                
+
     
     def run(self):
         logger.debug(f"args: {self.args}")

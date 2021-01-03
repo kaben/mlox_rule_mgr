@@ -1,0 +1,188 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @Bethsoft [Bethesda]
+
+[Order]
+Morrowind.esm
+Tribunal.esm
+Bloodmoon.esm
+
+[Note]
+ These official plugins have some GMSTs (game settings) that are duplicates of those in the masters. This means that they can be safely removed. However, if you choose to leave them in they should not cause any problems unless they mask intentional changes to those GMSTs that are made higher in your load order.
+ (See also: What the hell is a GMST? http://www.mwmythicmods.com/argent/tech/gmst.html )
+[SIZE 29311 EBQ_Artifact.esp]
+[SIZE 131705 entertainers.esp]
+[SIZE 51830 master_index.esp]
+[SIZE 30634 bcsounds.esp]
+[SIZE 29635 AreaEffectArrows.esp]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @Blah
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @Plugins using Deprecated Leveled List Functions on Bethsoft lists
+
+[Note]
+ !! Uses deprecated AddToLev* function to modify Bethsoft leveled lists. Using any of these plugins will store leveled lists in your savegame that will override lists in your merged leveled lists plugin (e.g. "Mashed Lists.esp"), if you have one. If you have used one of these plugins, you can clean modified leveled lists from your savegame using the "Repair All" feature of "Wrye Mash". For an explanation of why the functions AddToLev*/RemoveFromLev* are  deprecated, please see (Some patches may be available at that link):
+ !! http://www.uesp.net/wiki/Tes3Mod:Leveled_Lists
+;;acsAppoldro.esp ;patched by acsAppoldroFixedLL.esp (see below)
+BEER! Combo v1.12-03a (PR esm v2.4fix).esp
+BEER! Combo v1.12-03a (PR esp v2.4fix).esp
+BEER! Combo v1.12-03a.esp
+BEER! Combo.esp
+BMExtras.esp
+Clean Black Queen Chronicles Ver 2.5.esp
+;;EcoAdj(Sri+Ingredients).esp ;can be patched by "Sri Alchemy BM List Patch.esp", see Economy Adjuster [HotFusion] below.
+;;GIANTS.esm ; patched by Z4K_Giants_AddToLev_Patch.esp (see below)
+MTT Vol III.esp
+;;MTT IV Master.esp ;patched by a number of ESPs, see "@MTT (Magical Trinkets of Tamriel) [Chris Woods]"
+Melee Missiles v1.2.esp
+MWInhabitants Freeform (Vol 1).esp
+NoM 2.1 with BEER!.esp
+NoM 2.12-03a with BEER! (PR esm v2.4 fix).esp
+NoM 2.12-03a with BEER! (PR esp v2.4 fix).esp
+NoM 2.12-03a with BEER!.esp
+Sris_Alchemy_Trib.esp
+;;Stinkers.esp ; patched by Gaius Atrius' "Stinkers and Bathers v2.0" (see below)
+;;The Wilderness Mod 2.0.esm  ; patched by ab01Wilderness2.1patch.esp (see below)
+;;The Wilderness Mod 2.0 T & B.esm ; patched by ab01Wilderness2.1patch.esp (see below)
+TribIntegration.esp
+Undead arise from death 2.0.esp
+Werewolves BM add-on.esp
+Werewolves.esp
+;; -*- mode: emacs-lisp -*-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; NOTE - the rules in this file are BETA! While they have been fairly well
+;; tested, it's still possible they may give incorrect advice on conflicts and
+;; pre-requisites, and they may not sort your load order correctly. Read
+;; mlox_readme.txt for safe testing procedures.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[Version 2017-15-10 11:11:11 (UTC)]
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Morrowind mlox_base.txt
+;; This file needs to live in the directory where mlox.py runs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; This file is intended as a repository of community knowledge about
+;; how plugins should be ordered, what dependencies they have, where
+;; they conflict, and such.
+;;
+;; Generally speaking, you do not want to edit this file. Instead, use
+;; mlox_user.txt, which will override this file, if present.
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Note for Editors (read this if you will be making changes in svn):
+;;
+;; URLs:
+;; Please make sure URLs are surrounded with whitespace:
+;; Good:
+;; (Ref: http://www.uesp.net/wiki/Tes3Mod:Leveled_Lists )
+;; Bad:
+;; (Ref: http://www.uesp.net/wiki/Tes3Mod:Leveled_Lists)
+;; sometimes rules are quoted on web pages that automatically link
+;; URLs, and without whitespace it can make a broken link.
+;;
+;; Sections:
+;; most rules are grouped into "sections", which begin with "@"
+;; followed by the section name, and each section corresponds more or
+;; less to one "Mod". This is only a convention to help keep order in
+;; the file, and to generate some happy statistics.
+;;
+;; Highlighting:
+;; When a warning message on a rule begins with exclamation points,
+;; that comment will be highlighted in the GUI Messages pane.
+;; ! - one bang is highlighted blue for low priority
+;;     use low priority for stuff that should be "noticed", but probably
+;;     have low to nil impact on playing.
+;; !! - yellow, for medium priority
+;;     use medium priority for stuff that could possibly impact the
+;;     game but is probably not too serious.
+;; !!! - red, for most urgent priority
+;;     use urgent priority for stuff that could break the mod or game.
+;; the [Requires] rule will automatically highlight in red.
+;; the [Conflict] and [Patch] rules will automatically highlight in yellow.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Ordering Preferences
+;; Put all the NearStart/NearEnd rules here to keep track of them.
+;; The items are listed in priority order, the first has highest priority.
+;; So "Mashed Lists.esp" should always be the first in the NearEnd
+;; rule in order to ensure it loads very near the end of the load order.
+;;
+;; Note: overuse of NearStart/NearEnd may render them meaningless.
+;; They are intended to be used only for very special circumstances.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;Dragon32: Added some fix mods (fixes are not included in MPP 1.6.5b). Try to keep these to the absolute minimum.
+
+[NearStart]
+Morrowind.esm
+Tribunal.esm
+Bloodmoon.esm
+;;wildcard to pick up all the iterations of the MPP
+Morrowind Patch *.esm
+;;MPP from Trancemaster_1988's "Morrowind Rebirth"
+Morrowind Rebirth <VER> - Morrowind Patch *.esm
+;;Script Improvements 1.14 [Grond1911], q.v.
+gr_ScriptImprovements.esm
+gr_ScriptImprovements.esp
+;;arvisrend's Morrowind fixes 0.5 [arvisrend], q.v.
+arvisrend - fixes - books.ESP
+arvisrend - fixes - dialogue.ESP
+arvisrend - fixes - objects (no shadows).ESP
+arvisrend - fixes - objects.ESP
+arvisrend - fixes - persistent corpses.ESP
+arvisrend - fixes - scripts.ESP
+;;Unofficial Morrowind Patch Project Bug Fixes 2.0 [EnderAndrew], q.v.
+Clean UMPP-fixes-BTB-v2.esp
+Clean UMPP-fixes-v2.esp
+;;Midgetalien's Bloodmoon Patch 0.5.1 [Midgetalien], q.v.
+Clean_bloodmoonpatch_05.esp
+;;General Fixes Mod by Fritz
+GFM_6.3.2_1C.esp
+
+[Order]
+Morrowind.esm
+Tribunal.esm
+Bloodmoon.esm
+
+[NearEnd]
+multipatch.esp
+Mashed Lists.esp
+fogpatch.esp
+Merged_Leveled_Lists.esp
+Merged_Objects.esp
+Merged_Dialogs.esp
+Piratelords Trade Enhancements.esp
+NOM 2.12.esp
+NOM 2.13.esp
+NoM 3.0.esp
+GUARD-Remover.esp ; (Ref: "Advanced GUARDS IV.doc")
+MW Containers Animated exp.esp ; (Ref: "aceg_readme.txt")
+AC_Updater.esp ; (Ref: "AC_Optimized_Readme.txt")
+;;begin lighting mods
+;;  these affect lighting in vanilla cells, so load after most other mods
+LBS_addon_hvy_v1.1.esp ; (Ref: "LBS_addon.txt")
+LBS_addon_Hvy_VD_v1.1.esp ; (Ref: "LBS_addon.txt")
+LBS_addon_lt_v1.1.esp ; (Ref: "LBS_addon.txt")
+LBS_addon_lt_VD_v1.1.esp ; (Ref: "LBS_addon.txt")
+LBS_addon_reg_v1.1.esp ; (Ref: "LBS_addon.txt")
+LBS_addon_reg_VD_v1.1.esp ; (Ref: "LBS_addon.txt")
+Lights 300 v5.esp ; (Ref: "readme_Lights 300 v4.3.txt")
+Lights 300 v5 + DBL.esp ; Dwemer Blinking Lights (q.v.) version
+TLM - Ambient Light + Fog Update.esp ; (Ref: "TLM - ~Readme.htm")
+True_Lights_And_Darkness_0.5.esp ; (Ref: "True_Lights_And_Darkness_1.0_Readme.txt")
+True_Lights_And_Darkness_0.5 + DBL.esp ; Dwemer Blinking Lights (q.v.) version
+True_Lights_And_Darkness_1.0-NoDaylight.esp ; (Ref: "True_Lights_And_Darkness_1.0_Readme.txt")
+True_Lights_And_Darkness_1.0-NoDaylight + DBL.esp ; Dwemer Blinking Lights (q.v.) version
+True_Lights_And_Darkness_1.1.esp ; (Ref: "True_Lights_And_Darkness_1.0_Readme.txt")
+True_Lights_And_Darkness_1.1 + DBL.esp ; Dwemer Blinking Lights (q.v.) version
+;;end lighting mods
+
+[Order]
+Merged_Dialogs.esp
+Merged_Objects.esp
+Merged_Leveled_Lists.esp
+Mashed Lists.esp
+multipatch.esp
