@@ -1,52 +1,3 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; @Bethsoft [Bethesda]
-
-[Order]
-Morrowind.esm
-Tribunal.esm
-Bloodmoon.esm
-
-[Note]
- These official plugins have some GMSTs (game settings) that are duplicates of those in the masters. This means that they can be safely removed. However, if you choose to leave them in they should not cause any problems unless they mask intentional changes to those GMSTs that are made higher in your load order.
- (See also: What the hell is a GMST? http://www.mwmythicmods.com/argent/tech/gmst.html )
-[SIZE 29311 EBQ_Artifact.esp]
-[SIZE 131705 entertainers.esp]
-[SIZE 51830 master_index.esp]
-[SIZE 30634 bcsounds.esp]
-[SIZE 29635 AreaEffectArrows.esp]
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; @Blah
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; @Plugins using Deprecated Leveled List Functions on Bethsoft lists
-
-[Note]
- !! Uses deprecated AddToLev* function to modify Bethsoft leveled lists. Using any of these plugins will store leveled lists in your savegame that will override lists in your merged leveled lists plugin (e.g. "Mashed Lists.esp"), if you have one. If you have used one of these plugins, you can clean modified leveled lists from your savegame using the "Repair All" feature of "Wrye Mash". For an explanation of why the functions AddToLev*/RemoveFromLev* are  deprecated, please see (Some patches may be available at that link):
- !! http://www.uesp.net/wiki/Tes3Mod:Leveled_Lists
-;;acsAppoldro.esp ;patched by acsAppoldroFixedLL.esp (see below)
-BEER! Combo v1.12-03a (PR esm v2.4fix).esp
-BEER! Combo v1.12-03a (PR esp v2.4fix).esp
-BEER! Combo v1.12-03a.esp
-BEER! Combo.esp
-BMExtras.esp
-Clean Black Queen Chronicles Ver 2.5.esp
-;;EcoAdj(Sri+Ingredients).esp ;can be patched by "Sri Alchemy BM List Patch.esp", see Economy Adjuster [HotFusion] below.
-;;GIANTS.esm ; patched by Z4K_Giants_AddToLev_Patch.esp (see below)
-MTT Vol III.esp
-;;MTT IV Master.esp ;patched by a number of ESPs, see "@MTT (Magical Trinkets of Tamriel) [Chris Woods]"
-Melee Missiles v1.2.esp
-MWInhabitants Freeform (Vol 1).esp
-NoM 2.1 with BEER!.esp
-NoM 2.12-03a with BEER! (PR esm v2.4 fix).esp
-NoM 2.12-03a with BEER! (PR esp v2.4 fix).esp
-NoM 2.12-03a with BEER!.esp
-Sris_Alchemy_Trib.esp
-;;Stinkers.esp ; patched by Gaius Atrius' "Stinkers and Bathers v2.0" (see below)
-;;The Wilderness Mod 2.0.esm  ; patched by ab01Wilderness2.1patch.esp (see below)
-;;The Wilderness Mod 2.0 T & B.esm ; patched by ab01Wilderness2.1patch.esp (see below)
-TribIntegration.esp
-Undead arise from death 2.0.esp
-Werewolves BM add-on.esp
-Werewolves.esp
 ;; -*- mode: emacs-lisp -*-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; NOTE - the rules in this file are BETA! While they have been fairly well
@@ -186,3 +137,52 @@ Merged_Objects.esp
 Merged_Leveled_Lists.esp
 Mashed Lists.esp
 multipatch.esp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @Bethsoft [Bethesda]
+
+[Order]
+Morrowind.esm
+Tribunal.esm
+Bloodmoon.esm
+
+[Note]
+ These official plugins have some GMSTs (game settings) that are duplicates of those in the masters. This means that they can be safely removed. However, if you choose to leave them in they should not cause any problems unless they mask intentional changes to those GMSTs that are made higher in your load order.
+ (See also: What the hell is a GMST? http://www.mwmythicmods.com/argent/tech/gmst.html )
+[SIZE 29311 EBQ_Artifact.esp]
+[SIZE 131705 entertainers.esp]
+[SIZE 51830 master_index.esp]
+[SIZE 30634 bcsounds.esp]
+[SIZE 29635 AreaEffectArrows.esp]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @Blah
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @Plugins using Deprecated Leveled List Functions on Bethsoft lists
+
+[Note]
+ !! Uses deprecated AddToLev* function to modify Bethsoft leveled lists. Using any of these plugins will store leveled lists in your savegame that will override lists in your merged leveled lists plugin (e.g. "Mashed Lists.esp"), if you have one. If you have used one of these plugins, you can clean modified leveled lists from your savegame using the "Repair All" feature of "Wrye Mash". For an explanation of why the functions AddToLev*/RemoveFromLev* are  deprecated, please see (Some patches may be available at that link):
+ !! http://www.uesp.net/wiki/Tes3Mod:Leveled_Lists
+;;acsAppoldro.esp ;patched by acsAppoldroFixedLL.esp (see below)
+BEER! Combo v1.12-03a (PR esm v2.4fix).esp
+BEER! Combo v1.12-03a (PR esp v2.4fix).esp
+BEER! Combo v1.12-03a.esp
+BEER! Combo.esp
+BMExtras.esp
+Clean Black Queen Chronicles Ver 2.5.esp
+;;EcoAdj(Sri+Ingredients).esp ;can be patched by "Sri Alchemy BM List Patch.esp", see Economy Adjuster [HotFusion] below.
+;;GIANTS.esm ; patched by Z4K_Giants_AddToLev_Patch.esp (see below)
+MTT Vol III.esp
+;;MTT IV Master.esp ;patched by a number of ESPs, see "@MTT (Magical Trinkets of Tamriel) [Chris Woods]"
+Melee Missiles v1.2.esp
+MWInhabitants Freeform (Vol 1).esp
+NoM 2.1 with BEER!.esp
+NoM 2.12-03a with BEER! (PR esm v2.4 fix).esp
+NoM 2.12-03a with BEER! (PR esp v2.4 fix).esp
+NoM 2.12-03a with BEER!.esp
+Sris_Alchemy_Trib.esp
+;;Stinkers.esp ; patched by Gaius Atrius' "Stinkers and Bathers v2.0" (see below)
+;;The Wilderness Mod 2.0.esm  ; patched by ab01Wilderness2.1patch.esp (see below)
+;;The Wilderness Mod 2.0 T & B.esm ; patched by ab01Wilderness2.1patch.esp (see below)
+TribIntegration.esp
+Undead arise from death 2.0.esp
+Werewolves BM add-on.esp
+Werewolves.esp

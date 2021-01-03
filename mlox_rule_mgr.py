@@ -73,7 +73,7 @@ class MloxRuleManager(object):
         sorted_rulefile_names = list()
         for rulefile_name in rulefile_names:
             sorted_rulefile_names.extend(glob.glob(rulefile_name))
-        sorted_rulefile_names.sort()
+        sorted_rulefile_names.sort(key = str.lower)
         
         with open(basefile_name, "w", encoding="utf-8") as out_f:
             for rulefile_name in sorted_rulefile_names:
