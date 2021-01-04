@@ -1,0 +1,61 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Oops I am unorganized
+;;;;;;;;;
+
+[NearFirst]
+	Everything should overwrite this but I can't be bothered to put it in the right section.
+abc_mod.esp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; @mod2 [author2]
+
+[CONFLICT]
+	Only use one.
+abc_mod.esp
+mod2.esp
+
+;;;;;;;;;;;;;;;
+;; @abc_mod [author1]
+
+[Order]
+abc_mod.esp
+mod3.esp
+
+[Patch]
+abc_mod.esp
+abc_mod_v2_patch.esp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;@abc_mod [author1]
+
+; I guess I copypasted this from somewhere and didn't merge properly
+[Order]
+abc_mod.esp
+cool_new_mod.esp
+
+;;;;;;;;;;;;;;;;;;;;
+;;; @unique_mod [author3]
+
+[Order]
+fun_mod.esp
+unique_mod.esp
+
+[Requires]
+unique_fun_mod.esp
+[ALL fun_mod.esp
+     unique_mod.esp]
+	 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @mod2   [author2]
+
+[ORDER]
+mod2.esp
+mod1.esp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @mod2 [otherauthor]
+
+[Order]
+unique_mod.esp
+otherauthor's mod2.esp

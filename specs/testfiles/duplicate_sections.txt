@@ -1,0 +1,14 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; @mod2 [author2]
+
+[CONFLICT]
+	Only use one.
+abc_mod.esp
+mod2.esp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @mod2   [author2]
+
+[ORDER]
+mod2.esp
+mod1.esp

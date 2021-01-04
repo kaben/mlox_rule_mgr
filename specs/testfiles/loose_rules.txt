@@ -1,0 +1,9 @@
+;; Maybe has comments; doesn't have sections, just some rules
+
+[Order]
+mod1.esp
+mod2.esp
+
+[Order]
+mod1.esp
+mod3.esp

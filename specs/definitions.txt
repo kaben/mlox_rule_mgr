@@ -1,0 +1,27 @@
+Definitions:
+
+HEADER:
+Commented lines and RULEs at the beginning of the file. Ends when the first section starts.
+
+(In the future we may wish to define this only as the initial comments, but for now it includes loose RULEs, with or without comments.)
+
+SECTION:
+Convention for grouping rules about the same plugin
+	format:
+	1. comment-char-only line
+	2. comment-chars followed by whitespace followed by @ symbol followed by some text
+	3. comments, whitespace, or RULEs
+	4. ends at next section start, alas
+	
+RULE:
+Presumably well-defined by MLOX's parser; it may be useful to accept both
+	format:
+	[RULE]
+	rulestuff
+
+	and
+	format:
+	;rulecomment with no empty lines after it
+	[RULE]
+	rulestuff
+

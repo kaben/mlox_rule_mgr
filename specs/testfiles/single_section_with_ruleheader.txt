@@ -1,0 +1,15 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; This is a header!
+
+; This is also part of the header
+
+[ORDER]
+mod3.esp
+mod2.esp
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; @mod1 [author1]
+
+[ORDER]
+mod2.esp
+mod1.esp
