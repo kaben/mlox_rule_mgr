@@ -258,7 +258,7 @@ Expected output:
 		abc_mod [author1]
 		unique_mod [author3]
 		mod2 [author2]
-		mod2 [author1]
+		mod2 [otherauthor]
 ```
 
 
