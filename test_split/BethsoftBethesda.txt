@@ -13,6 +13,4 @@ Bloodmoon.esm
 [SIZE 131705 entertainers.esp]
 [SIZE 51830 master_index.esp]
 [SIZE 30634 bcsounds.esp]
-[SIZE 29635 AreaEffectArrows.esp]
-
-
+[SIZE 29635 AreaEffectArrows.esp]

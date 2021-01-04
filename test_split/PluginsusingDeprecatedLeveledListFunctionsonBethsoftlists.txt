@@ -28,6 +28,4 @@ Sris_Alchemy_Trib.esp
 TribIntegration.esp
 Undead arise from death 2.0.esp
 Werewolves BM add-on.esp
-Werewolves.esp
-
-
+Werewolves.esp

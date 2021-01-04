@@ -40,6 +40,12 @@ def get_safe_filename(name):
     return filename
 
 
+def coalesce_lines(lines):
+    text = "".join(lines)
+    return text.strip()
+
+
+
 class MloxRuleManager(object):
     def __init__(self, args):
         """
@@ -80,8 +86,7 @@ class MloxRuleManager(object):
                 logger.info(f"reading rulefile '{rulefile_name}'")
                 with open(rulefile_name, "r", encoding="utf-8") as in_f:
                     lines = in_f.readlines()
-                    text = "".join(lines)
-                    out_f.write(text.strip())
+                    out_f.write(coalesce_lines(lines))
                     out_f.write(os.linesep)
     
     def split(self):
@@ -131,7 +136,10 @@ class MloxRuleManager(object):
                     #logger.debug(f"{line_num}: {sectionname_match}")
                     #logger.debug(sectionname_match.groups())
                     # Save existing section.
-                    sections[sectionname] = section
+                    #sections[sectionname] = section              
+                    section_versions = sections.get(sectionname, list())
+                    section_versions.append(section)
+                    sections[sectionname] = section_versions
                     # TODO: Instead of collecting sections into dictionary,
                     # save to disk at this point.
                     # Create new section.
@@ -155,15 +163,20 @@ class MloxRuleManager(object):
             # Save final section.
             if comments:
                 section.extend(comments)
-            sections[sectionname] = section
-                
+            #sections[sectionname] = section              
+            section_versions = sections.get(sectionname, list())
+            section_versions.append(section)
+            sections[sectionname] = section_versions
+
             logger.debug(f"output directory: {directory}")
-            for name, section in sections.items():
-                logger.info(f"saving section '{name}'")
+            for name, section_versions in sections.items():
                 sectionfile_name = os.path.join(directory, f"{name}.txt")
                 with open(sectionfile_name, "w", encoding="utf-8") as out_f:
-                    out_f.writelines(section)
-                
+                    for i, section in enumerate(section_versions):
+                        logger.info(f"saving section '{name}' version {i}")
+                        out_f.write(coalesce_lines(section))
+                        out_f.write(os.linesep)
+            
 
     
     def run(self):
