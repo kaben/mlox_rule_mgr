@@ -249,8 +249,8 @@ Expected output:
 	6 Mod Sections
 	Sections Sorted: No
 	2 Duplicate Section Names:
-		mod2 [author2]:
-		abc_mod [author1]:
+		mod2 [author2]: line 9, line 49
+		abc_mod [author1]: line 17, line 28
 		
 	Sections found:
 		mod2 [author2]
