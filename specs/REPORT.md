@@ -1,6 +1,6 @@
-# Test cases: **report** #
+# Test cases: `report` #
 
-The **report** command is useful for:
+The `report` command is useful for:
 
 1. debugging mlox_rule_mgr's parsing
 1. checking an mlox file before distribution
@@ -42,7 +42,7 @@ Expected output:
 
 ## Empty file with `-sections` ##
 
-`> mlox_rule_mgr report -modlist empty.txt`
+`> mlox_rule_mgr report -sections empty.txt`
 
 Expected output:
 
