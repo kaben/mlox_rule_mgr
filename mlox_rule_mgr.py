@@ -61,20 +61,20 @@ class MloxRuleManager(object):
 
     def merge(self):
         """
-        usage: merge [-h] basefile rulefiles [rulefiles ...]
+        usage: merge [-h] base_mlox_file mlox_files [mlox_files ...]
         
         positional arguments:
-          basefile    target file to merge subsequent mlox rule files into
-          rulefiles   rule files to merge
+          base_mlox_file    target file to merge subsequent mlox rule files into
+          mlox_files   rule files to merge
 
         Returns
         -------
         None.
 
         """
-        basefile_name = self.args.basefile
-        rulefile_names = self.args.rulefiles
-        logger.debug(f"basefile: {basefile_name}, rulefiles: {rulefile_names}")
+        basefile_name = self.args.base_mlox_file
+        rulefile_names = self.args.mlox_files
+        logger.debug(f"base_mlox_file: {basefile_name}, mlox_files: {rulefile_names}")
 
         sorted_rulefile_names = list()
         for rulefile_name in rulefile_names:
@@ -91,10 +91,10 @@ class MloxRuleManager(object):
     
     def split(self):
         """
-        usage: split [-h] [-d DIRECTORY] rulefile
+        usage: split [-h] [-d DIRECTORY] mlox_file
 
         positional arguments:
-          rulefile              rule file to split
+          mlox_file              rule file to split
         
         optional arguments:
           -h, --help            show this help message and exit
@@ -106,7 +106,7 @@ class MloxRuleManager(object):
         None.
 
         """
-        rulefile_name = os.path.realpath(self.args.rulefile)
+        rulefile_name = os.path.realpath(self.args.mlox_file)
         directory = self.args.directory
         if directory is None:
             directory = os.path.dirname(os.path.realpath(rulefile_name))
@@ -210,11 +210,11 @@ def parse_args():
     subparsers = parser.add_subparsers(dest = "command")
     
     merge_cmd = subparsers.add_parser("merge", help = "merge mlox rule files")
-    merge_cmd.add_argument("basefile", help = "target file to merge subsequent mlox rule files into")
-    merge_cmd.add_argument("rulefiles", nargs = "+", help = "rule files to merge")
+    merge_cmd.add_argument("base_mlox_file", help = "target file to merge subsequent mlox rule files into")
+    merge_cmd.add_argument("mlox_files", nargs = "+", help = "rule files to merge")
     
     split_cmd = subparsers.add_parser("split", help = "split an mlox rule file")
-    split_cmd.add_argument("rulefile", help = "rule file to split")
+    split_cmd.add_argument("mlox_file", help = "rule file to split")
     split_cmd.add_argument("-d", "--directory", help = "output directory")
     
     args = parser.parse_args()
