@@ -1,23 +1,41 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan  2 17:45:55 2021
+Created on Sat Jan  9 18:18:51 2021
 
-@author: Morrowind
+@author: Kaben Nanlohy <kaben.nanlohy@gmail.com>
 """
 
-import argparse, glob, logging, os, re, string, sys
+import argparse
+import glob
+import logging
+import os
+import re
+import string
+import sys
 
-# Create logger named after this module
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-if not logger.hasHandlers():
-    # Create logging handler for console output
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    # Create formatter to display time
-    formatter = logging.Formatter('%(name)s:%(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+from mlox_rule_mgr import __version__
+
+__author__ = "Kaben Nanlohy"
+__copyright__ = "Kaben Nanlohy"
+__license__ = "mit"
+
+_logger = logging.getLogger(__name__)
+
+
+def fib(n):
+    """Fibonacci example function
+
+    Args:
+      n (int): integer
+
+    Returns:
+      int: n-th Fibonacci number
+    """
+    assert n > 0
+    a, b = 1, 1
+    for i in range(n - 1):
+        a, b = b, a + b
+    return a
 
 
 def get_safe_filename(name):
@@ -74,7 +92,7 @@ class MloxRuleManager(object):
         """
         basefile_name = self.args.base_mlox_file
         rulefile_names = self.args.mlox_files
-        logger.debug(f"base_mlox_file: {basefile_name}, mlox_files: {rulefile_names}")
+        _logger.debug(f"base_mlox_file: {basefile_name}, mlox_files: {rulefile_names}")
 
         sorted_rulefile_names = list()
         for rulefile_name in rulefile_names:
@@ -83,7 +101,7 @@ class MloxRuleManager(object):
         
         with open(basefile_name, "w", encoding="utf-8") as out_f:
             for rulefile_name in sorted_rulefile_names:
-                logger.info(f"reading rulefile '{rulefile_name}'")
+                _logger.info(f"reading rulefile '{rulefile_name}'")
                 with open(rulefile_name, "r", encoding="utf-8") as in_f:
                     lines = in_f.readlines()
                     out_f.write(coalesce_lines(lines))
@@ -111,10 +129,10 @@ class MloxRuleManager(object):
         if directory is None:
             directory = os.path.dirname(os.path.realpath(rulefile_name))
         if not os.path.exists(directory):
-            logger.warn(f"specified output directory '{directory}' does not exist")
+            _logger.warn(f"specified output directory '{directory}' does not exist")
             return
         
-        logger.debug(f"rulefile: {rulefile_name}")
+        _logger.debug(f"rulefile: {rulefile_name}")
 
         self.comment_regex = re.compile(r"\s*;+\s*")
         self.sectionname_regex = re.compile(r"\s*;+\s*@(.*)")
@@ -168,12 +186,12 @@ class MloxRuleManager(object):
             section_versions.append(section)
             sections[sectionname] = section_versions
 
-            logger.debug(f"output directory: {directory}")
+            _logger.debug(f"output directory: {directory}")
             for name, section_versions in sections.items():
                 sectionfile_name = os.path.join(directory, f"{name}.txt")
                 with open(sectionfile_name, "w", encoding="utf-8") as out_f:
                     for i, section in enumerate(section_versions):
-                        logger.info(f"saving section '{name}' version {i}")
+                        _logger.info(f"saving section '{name}' version {i}")
                         out_f.write(coalesce_lines(section))
                         out_f.write(os.linesep)
             
@@ -204,44 +222,109 @@ class MloxRuleManager(object):
         None.
 
         """
-        logger.debug(f"args: {self.args}")
-        command = self.args.command
-        if hasattr(self, command):
-            getattr(self, command)()
+        _logger.debug(f"args: {self.args}")
+        subcommand = self.args.subcommand
+        if hasattr(self, subcommand):
+            getattr(self, subcommand)()
         else:
-            logger.info("I don't have that command")
+            _logger.info("I don't have that subcommand")
 
 
-def parse_args():
+def parse_args(args):
+    """Parse command line parameters
+
+    Args:
+      args ([str]): command line parameters as list of strings
+
+    Returns:
+      :obj:`argparse.Namespace`: command line parameters namespace
     """
-    Setup command-line argument parsing.
-
-    Returns
-    -------
-    args :  ArgumentParser.Namespace
-            rule-management command-line arguments.
-
-    """
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(dest = "command")
+    parser = argparse.ArgumentParser(
+        description="Mlox rule-file management commands"
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="mlox_rule_mgr {ver}".format(ver=__version__),
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="loglevel",
+        help="set loglevel to INFO",
+        action="store_const",
+        const=logging.INFO,
+    )
+    parser.add_argument(
+        "-vv",
+        "--very-verbose",
+        dest="loglevel",
+        help="set loglevel to DEBUG",
+        action="store_const",
+        const=logging.DEBUG,
+    )
+    subparsers = parser.add_subparsers(
+        title = "subcommands",
+        dest = "subcommand",
+        required = True,
+    )
     
-    merge_cmd = subparsers.add_parser("merge", help = "merge mlox rule files")
-    merge_cmd.add_argument("base_mlox_file", help = "target file to merge subsequent mlox rule files into")
-    merge_cmd.add_argument("mlox_files", nargs = "+", help = "rule files to merge")
+    merge_cmd = subparsers.add_parser(
+        "merge",
+        help = "merge mlox rule files"
+    )
+    merge_cmd.add_argument(
+        "base_mlox_file",
+        help = "target file to merge subsequent mlox rule files into"
+    )
+    merge_cmd.add_argument(
+        "mlox_files",
+        nargs = "+", help = "rule files to merge"
+    )
     
-    split_cmd = subparsers.add_parser("split", help = "split an mlox rule file")
-    split_cmd.add_argument("mlox_file", help = "rule file to split")
-    split_cmd.add_argument("-d", "--directory", help = "output directory")
+    split_cmd = subparsers.add_parser(
+        "split",
+        help = "split an mlox rule file"
+    )
+    split_cmd.add_argument(
+        "mlox_file",
+        help = "rule file to split"
+    )
+    split_cmd.add_argument(
+        "-d", "--directory",
+        help = "output directory"
+    )
     
-    report_cmd = subparsers.add_parser("report", help = "examine and report an mlox rule file")
-    report_cmd.add_argument("mlox_file", help = "rule file to examine")
-    report_cmd.add_argument("-s", "--sections", action = 'store_true', help = "print file sections in the order they appear")
+    report_cmd = subparsers.add_parser(
+        "report",
+        help = "examine and report an mlox rule file"
+    )
+    report_cmd.add_argument(
+        "mlox_file",
+        help = "rule file to examine"
+    )
+    report_cmd.add_argument(
+        "-s", "--sections",
+        action = 'store_true',
+        help = "print file sections in the order they appear"
+    )
 
     args = parser.parse_args()
     return args
 
+def setup_logging(loglevel = None):
+    """Setup basic logging
 
-def main():
+    Args:
+      loglevel (int): minimum loglevel for emitting messages
+    """
+    logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+    logging.basicConfig(
+        level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
+    )
+
+
+def main(args):
     """
     Run MloxRuleManager(args) with parsed command-line args.
 
@@ -250,10 +333,16 @@ def main():
     None.
 
     """
-    args = parse_args()
+    args = parse_args(args)
+    setup_logging(args.loglevel)
     mlox_rule_mgr = MloxRuleManager(args)
     mlox_rule_mgr.run()
 
 
+def run():
+    """Entry point for console_scripts"""
+    main(sys.argv[1:])
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    run()
