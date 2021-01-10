@@ -6,6 +6,8 @@ Created on Sat Jan  9 18:18:51 2021
 """
 
 import argparse
+import contextlib
+import json
 import glob
 import logging
 import os
@@ -62,6 +64,23 @@ def coalesce_lines(lines):
     return text.strip()
 
 
+@contextlib.contextmanager
+def textfile_reader_factory(filename, encoding = "utf-8"):
+    f = open(filename, 'r', encoding = encoding)
+    try:
+        yield f
+    finally:
+        f.close()
+
+
+@contextlib.contextmanager
+def textfile_writer_factory(filename, encoding = "utf-8"):
+    f = open(filename, 'w', encoding = encoding)
+    try:
+        yield f
+    finally:
+        f.close()
+
 
 class MloxRuleManager(object):
     def __init__(self, args):
@@ -75,6 +94,62 @@ class MloxRuleManager(object):
 
         """
         self.args = args
+        self.reader_factory = textfile_reader_factory
+        self.writer_factory = textfile_writer_factory
+        self.comment_regex = re.compile(r"\s*;+\s*")
+        self.sectionname_regex = re.compile(r"\s*;+\s*@(.*)")
+
+
+    def parse_rulefile(self, reader):
+        # TODO: Instead of collecting sections into dictionary, save to disk.
+        sections = dict()
+
+        # Create first "header" section.
+        sectionname = "_header"
+        section = list()
+        comments = list()
+
+        for line_num, line in enumerate(reader.readlines()):
+            sectionname_match = self.sectionname_regex.match(line)
+            comment_match = self.comment_regex.match(line)
+            if sectionname_match:
+                #logger.debug(f"{line_num}: {sectionname_match}")
+                #logger.debug(sectionname_match.groups())
+                # Save existing section.
+                #sections[sectionname] = section              
+                section_versions = sections.get(sectionname, list())
+                section_versions.append(section)
+                sections[sectionname] = section_versions
+                # TODO: Instead of collecting sections into dictionary,
+                # save to disk at this point.
+                # Create new section.
+                sectionname = get_safe_filename(sectionname_match.group(1))
+                # Add existing comment lines to start of section.
+                section = comments
+                comments = list()
+                # Add section name to start of section.
+                section.append(line)
+            elif comment_match:
+                #logger.debug(f"{line_num}: {comment_match}")
+                # Collect comment line, but don't add to section yet.
+                comments.append(line)
+            else:
+                # Add any comment lines to current section.
+                section.extend(comments)
+                comments = list()
+                # Add current line to section.
+                section.append(line)
+
+        # Save final section.
+        if comments:
+            section.extend(comments)
+        section_versions = sections.get(sectionname, list())
+        section_versions.append(section)
+        sections[sectionname] = section_versions
+        
+        return sections
+        
+
 
     def merge(self):
         """
@@ -133,57 +208,9 @@ class MloxRuleManager(object):
         
         _logger.debug(f"rulefile: {rulefile_name}")
 
-        self.comment_regex = re.compile(r"\s*;+\s*")
-        self.sectionname_regex = re.compile(r"\s*;+\s*@(.*)")
-
         # Try to read rulefile.
         with open(rulefile_name, "r", encoding="utf-8") as in_f:
-            # TODO: Instead of collecting sections into dictionary, save to disk.
-            sections = dict()
-
-            # Create first "header" section.
-            sectionname = "_header"
-            section = list()
-            comments = list()
-
-            for line_num, line in enumerate(in_f.readlines()):
-                sectionname_match = self.sectionname_regex.match(line)
-                comment_match = self.comment_regex.match(line)
-                if sectionname_match:
-                    #logger.debug(f"{line_num}: {sectionname_match}")
-                    #logger.debug(sectionname_match.groups())
-                    # Save existing section.
-                    #sections[sectionname] = section              
-                    section_versions = sections.get(sectionname, list())
-                    section_versions.append(section)
-                    sections[sectionname] = section_versions
-                    # TODO: Instead of collecting sections into dictionary,
-                    # save to disk at this point.
-                    # Create new section.
-                    sectionname = get_safe_filename(sectionname_match.group(1))
-                    # Add existing comment lines to start of section.
-                    section = comments
-                    comments = list()
-                    # Add section name to start of section.
-                    section.append(line)
-                elif comment_match:
-                    #logger.debug(f"{line_num}: {comment_match}")
-                    # Collect comment line, but don't add to section yet.
-                    comments.append(line)
-                else:
-                    # Add any comment lines to current section.
-                    section.extend(comments)
-                    comments = list()
-                    # Add current line to section.
-                    section.append(line)
-
-            # Save final section.
-            if comments:
-                section.extend(comments)
-            #sections[sectionname] = section              
-            section_versions = sections.get(sectionname, list())
-            section_versions.append(section)
-            sections[sectionname] = section_versions
+            sections = self.parse_rulefile(in_f)
 
             _logger.debug(f"output directory: {directory}")
             for name, section_versions in sections.items():
@@ -210,7 +237,38 @@ class MloxRuleManager(object):
         None.
 
         """
+        rulefile_name = os.path.realpath(self.args.mlox_file)        
+        _logger.debug(f"rulefile: {rulefile_name}")
 
+        # Try to read rulefile.
+        with self.reader_factory(rulefile_name, encoding="utf-8") as in_f:
+            sections = self.parse_rulefile(in_f)
+            header = sections.pop("_header", None)
+
+            if header:
+                print("INFO: the file has a header.")
+            else:
+                print("INFO: the file does NOT have a header.")
+
+            section_names = list(sections.keys())
+            section_values = list(sections.values())
+            entries = [["".join(lines) for lines in entry] for entry in section_values]
+            
+            number_of_sections = len(section_names)
+            print(f"INFO: number of mod sections found: {number_of_sections}.")
+                        
+            sorted_section_names = section_names.copy()
+            sorted_section_names.sort(key = str.lower)
+            if section_names == sorted_section_names:
+                print("INFO: mod sections are sorted alphabetically (case-insensitive).")
+            else:
+                print("INFO: mod sections are NOT sorted alphabetically (case-insensitive).")
+
+            for name, entries in zip(section_names, entries):
+                num_entries = len(entries)
+                if num_entries != 1:
+                    print(f"WARNING: in section {json.dumps(name)}, the number of entries ({num_entries}) is not 1.")
+                
     
     def run(self):
         """
@@ -270,7 +328,7 @@ def parse_args(args):
     
     merge_cmd = subparsers.add_parser(
         "merge",
-        help = "merge mlox rule files"
+        help = "merge mlox rule files",
     )
     merge_cmd.add_argument(
         "base_mlox_file",
@@ -296,7 +354,18 @@ def parse_args(args):
     
     report_cmd = subparsers.add_parser(
         "report",
-        help = "examine and report an mlox rule file"
+        help = "examine and report an mlox rule file",
+        description = """
+The report command will look at an mlox-formatted file and give you warnings and stats:
+
+- (info) whether the file has a header
+- (info) number of mod sections found
+- (info) whether the mod sections are sorted alphabetically
+- (warning) number, names, and line numbers of mod sections with the same name
+
+If the --sections option is specified, the sections in the file will be printed in the order they appear.
+""",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     report_cmd.add_argument(
         "mlox_file",
@@ -317,6 +386,8 @@ def setup_logging(loglevel = None):
     Args:
       loglevel (int): minimum loglevel for emitting messages
     """
+    if loglevel is None:
+        loglevel = logging.INFO
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
     logging.basicConfig(
         level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
@@ -334,8 +405,8 @@ def main(args):
     """
     args = parse_args(args)
     setup_logging(args.loglevel)
-    mlox_rule_mgr = MloxRuleManager(args)
-    mlox_rule_mgr.run()
+    rule_mgr = MloxRuleManager(args)
+    rule_mgr.run()
 
 
 def run():
