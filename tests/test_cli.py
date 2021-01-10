@@ -76,11 +76,3 @@ def test_MloxRuleManager_parse():
     
     assert section_names == expected_section_names
     assert coalesced_sections == expected_sections
-
-    
-def test_fib():
-    assert cli.fib(1) == 1
-    assert cli.fib(2) == 1
-    assert cli.fib(7) == 13
-    with pytest.raises(AssertionError):
-        cli.fib(-10)

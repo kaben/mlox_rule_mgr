@@ -23,22 +23,6 @@ __copyright__ = "Kaben Nanlohy"
 _logger = logging.getLogger(__name__)
 
 
-def fib(n):
-    """Fibonacci example function
-
-    Args:
-      n (int): integer
-
-    Returns:
-      int: n-th Fibonacci number
-    """
-    assert n > 0
-    a, b = 1, 1
-    for i in range(n - 1):
-        a, b = b, a + b
-    return a
-
-
 def get_safe_filename(name):
     """
     Converts a name to a safe filename.
