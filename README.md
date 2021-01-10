@@ -1,6 +1,6 @@
-=============
-mlox_rule_mgr
-=============
+
+Mlox Rule Manager
+=================
 
 
 Tool to make Mlox (Morrowind Load Expert) rule files easier to generate and manage.
