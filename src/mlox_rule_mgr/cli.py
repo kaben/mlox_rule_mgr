@@ -17,7 +17,6 @@ from mlox_rule_mgr import __version__
 
 __author__ = "Kaben Nanlohy"
 __copyright__ = "Kaben Nanlohy"
-__license__ = "mit"
 
 _logger = logging.getLogger(__name__)
 
