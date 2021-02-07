@@ -90,7 +90,7 @@ Expected output:
 	Header: No
 	1 Mod Section
 	Sections Sorted: Yes
-	0 Sections for the same Plugin
+	0 Duplicate Section Names
 	
 	Sections found:
 		mod1 [author1]
