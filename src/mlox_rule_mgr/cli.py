@@ -141,7 +141,7 @@ class MloxRuleManager(object):
         # TODO: Instead of collecting sections into dictionary, save to disk.
         section_dict = dict()
 
-        # Create first "header" section.
+        # Create entry for header section.
         section_info = dict()
         section_info["line_number"] = 1
         section_info["mod_name"] = "_header"
@@ -151,11 +151,6 @@ class MloxRuleManager(object):
         comment_lines = list()
 
         for line_num, line in enumerate(reader.readlines()):
-            # Since enumerations used zero-based indexing,
-            # But file line numbers use one-based indexing,
-            # we add 1 to line_num.
-            #line_num += 1
-            
             section_name_match = self.section_name_regex_2.match(line)
             comment_match = self.comment_regex.match(line)
             if section_name_match:
@@ -168,22 +163,14 @@ class MloxRuleManager(object):
                 # TODO: Instead of collecting sections into dictionary,
                 # save to disk at this point.
                 # Create new section.
-                _logger.debug("NEW SECTION")
-                _logger.debug(f"{line_num}: section_name_match: {section_name_match}")
                 section_info = dict()
                 section_info["line_number"] = line_num
-
                 section_name_groupdict = section_name_match.groupdict()
-                _logger.debug(f"{line_num}: section_name_groupdict: {section_name_groupdict}")
-
                 mod_name = section_name_groupdict["mod_name"]
                 author = section_name_groupdict["author"]
                 section_info["mod_name"] = mod_name
                 section_info["author"] = author
                 section_name = f"{mod_name} [{author}]"
-                _logger.debug(f"{line_num}: mod_name: {mod_name}")
-                _logger.debug(f"{line_num}: author: {author}")
-                _logger.debug(f"{line_num}: section_name: {section_name}")
 
                 # Add existing comment lines to start of new section.
                 section_lines = comment_lines
@@ -251,6 +238,7 @@ class MloxRuleManager(object):
                     lines = in_f.readlines()
                     out_f.write(coalesce_lines(lines))
                     out_f.write(os.linesep)
+    
     
     def split_1(self):
         """
@@ -381,7 +369,8 @@ class MloxRuleManager(object):
         if hasattr(self, subcommand):
             getattr(self, subcommand)()
         else:
-            _logger.info("I don't have that subcommand")
+            # FIXME@kaben: This isn't a great place for this error msg. 
+            _logger.warn("I don't have that subcommand")
 
 
 def parse_args(args):

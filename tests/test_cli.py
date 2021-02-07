@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import json, os, sys
-
-import pytest
+import os
 
 from mlox_rule_mgr import cli
 
