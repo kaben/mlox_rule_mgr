@@ -313,12 +313,15 @@ class MloxRuleManager(object):
         with self.reader_factory(rulefile_name, encoding="utf-8") as in_f:
             section_dict = self.parse_rulefile(in_f)
             header_versions = section_dict.pop("_header", None)
+            
+            # Coalesce header contents into a single string to see if empty.
             header_content = "".join(["".join(version["lines"]) for version in header_versions])
-                        
+
             if (not header_content) and (len(section_dict) == 0):
                 print(f"{self.args.mlox_file} is empty.")
                 return
 
+            # Enumerate sections, tracking line numbers and duplicate names.
             num_sections = 0
             duplicate_sections = dict()
             section_line_nums = []
@@ -331,40 +334,36 @@ class MloxRuleManager(object):
                     section_line_nums.append((name, version["line_number"]))
 
             print(f"{self.args.mlox_file} report:")
-            print("\tHeader: ", end='')
-            print(header_content and 'Yes' or 'No')
-            print(f"\t{num_sections} Mod Section", end='')
-            print((num_sections != 1) and 's' or '')
+            print(f"\tHeader: {header_content and 'Yes' or 'No'}")
+            print(f"\t{num_sections} Mod Section{(num_sections != 1) and 's' or ''}")
             
             if (num_sections == 0):
                 return            
             
+            # Check whether sections appear in rulefile in lexical order.
             section_line_nums_sorted_by_name = section_line_nums.copy()
             section_line_nums_sorted_by_line = section_line_nums.copy()
             section_line_nums_sorted_by_name.sort(key = lambda entry: entry[0])
             section_line_nums_sorted_by_line.sort(key = lambda entry: entry[1])
-            sections_sorted_by_name = [entry[0] for entry in section_line_nums_sorted_by_name]
-            sections_sorted_by_line = [entry[0] for entry in section_line_nums_sorted_by_line]
-            print("\tSections Sorted: ", end='')
-            print((sections_sorted_by_name == sections_sorted_by_line) and 'Yes' or 'No')
+            sections_by_name = [entry[0] for entry in section_line_nums_sorted_by_name]
+            sections_by_line = [entry[0] for entry in section_line_nums_sorted_by_line]
+            print(f"\tSections Sorted: {(sections_by_name == sections_by_line) and 'Yes' or 'No'}")
 
-            num_dup_sections = len(duplicate_sections)
-            if (num_dup_sections == 0):
+            # List locations of sections with duplicated names.
+            ndups = len(duplicate_sections)
+            if (ndups == 0):
                 print("\t0 Duplicate Section Names")
             else:
-                if (num_dup_sections == 1):
-                    print("\t1 Duplicate Section Name:")
-                else:
-                    print(f"\t{num_dup_sections} Duplicate Section Names:")
+                print(f"\t{ndups} Duplicate Section Name{(ndups != 1) and 's' or ''}:")
                 for name, versions in duplicate_sections.items():
                     _logger.debug(f"report: duplicate_section: name {name}, versions {versions}")
                     line_number_list = ", ".join(f"line {version['line_number']}" for version in versions)
                     print(f"\t\t{name}: {line_number_list}")
 
+            # List names and line numbers of all sections found.
             if self.args.sections:
-                print()
-                print("\tSections found:")
-                for entry in sections_sorted_by_line:
+                print("\n\tSections found:")
+                for entry in sections_by_line:
                     print(f"\t\t{entry}")
 
     
@@ -477,6 +476,7 @@ If the --sections option is specified, the sections in the file will be printed 
 
     args = parser.parse_args(args)
     return args
+
 
 def setup_logging(loglevel = None):
     """Setup basic logging
